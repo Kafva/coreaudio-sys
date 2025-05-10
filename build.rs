@@ -132,7 +132,14 @@ fn build(sdk_path: Option<&str>, target: &str) {
     };
     builder = builder.size_t_is_usize(true);
 
-    builder = builder.clang_args(&[&format!("--target={}", target)]);
+    // See https://github.com/rust-lang/rust-bindgen/issues/3181
+    let clang_target = if target == "aarch64-apple-ios-sim" {
+        "aarch64-apple-ios-simulator"
+    } else {
+        target
+    };
+
+    builder = builder.clang_args(&[&format!("--target={}", clang_target)]);
 
     if let Some(sdk_path) = sdk_path {
         builder = builder.clang_args(&["-isysroot", sdk_path]);
